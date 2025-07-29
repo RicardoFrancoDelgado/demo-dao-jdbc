@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class SellerDaoJDBC implements SellerDao {
     private Connection conn;
+
     public SellerDaoJDBC(Connection conn) {
         this.conn = conn;
     }
@@ -62,8 +63,8 @@ public class SellerDaoJDBC implements SellerDao {
         try {
             st = conn.prepareStatement(
                     "UPDATE seller "
-                    + "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? "
-                    + "WHERE Id = ?"
+                            + "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? "
+                            + "WHERE Id = ?"
             );
 
             st.setString(1, obj.getName());
@@ -84,7 +85,20 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void deleteById(Integer id) {
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement("DELETE FROM seller WHERE Id = ?");
 
+            st.setInt(1, id);
+
+            st.executeUpdate();
+        }
+        catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        }
+        finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
@@ -95,10 +109,10 @@ public class SellerDaoJDBC implements SellerDao {
 
         try {
             st = conn.prepareStatement(
-              "SELECT seller.*,department.Name as DepName\n" +
-                      "FROM seller INNER JOIN department\n" +
-                      "ON seller.DepartmentId = department.Id\n" +
-                      "WHERE seller.Id = ?"
+                    "SELECT seller.*,department.Name as DepName\n" +
+                            "FROM seller INNER JOIN department\n" +
+                            "ON seller.DepartmentId = department.Id\n" +
+                            "WHERE seller.Id = ?"
             );
 
             st.setInt(1, id);
@@ -112,8 +126,7 @@ public class SellerDaoJDBC implements SellerDao {
                 return seller;
             }
             return null;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         } finally {
             DB.closeStatement(st);
@@ -122,7 +135,7 @@ public class SellerDaoJDBC implements SellerDao {
 
     }
 
-    private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException{
+    private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException {
         Seller seller = new Seller();
         seller.setId(rs.getInt("Id"));
         seller.setName(rs.getString("Name"));
@@ -170,8 +183,7 @@ public class SellerDaoJDBC implements SellerDao {
                 list.add(seller);
             }
             return list;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         } finally {
             DB.closeStatement(st);
@@ -212,8 +224,7 @@ public class SellerDaoJDBC implements SellerDao {
                 list.add(seller);
             }
             return list;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw new DbException(e.getMessage());
         } finally {
             DB.closeStatement(st);
