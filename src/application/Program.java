@@ -16,6 +16,8 @@ public class Program {
         Scanner sc = new Scanner(System.in);
         SellerDao sellerDao = DaoFactory.createSellerDao();
 
+        System.out.println("Testando métodos do sellerDao");
+
         System.out.println("=== TEST1: testando o findById ===");
         Seller seller = sellerDao.findById(3);
         System.out.println(seller);
